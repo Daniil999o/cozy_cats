@@ -50,6 +50,13 @@ namespace CozyPolyomino
             transform.position = pos;
         }
 
+        private Vector3 WorldCenter =>
+            transform.position + new Vector3(
+                gridWidth * cellSize * 0.5f,
+                0,
+                gridHeight * cellSize * 0.5f
+            );
+
         internal bool CanPlaceShape(Vector2Int gridOrigin, Vector2Int[] shapeCells) =>
             shapeCells.Select(cellOffset => gridOrigin + cellOffset)
                 .All(targetPos => !IsOutOfBounds(targetPos) && !IsCellOccupied(targetPos));
@@ -95,6 +102,19 @@ namespace CozyPolyomino
             _occupiedByObstacles.Clear();
         }
 
+        internal Vector3 GetOutOfGridPos(Vector3 pos, Vector2Int[] cells) {
+            Vector3 worldCenter = WorldCenter;
+            
+            while (cells.Select(cellOffset => WorldToGrid(pos) + cellOffset)
+                   .Any(targetPos => !IsOutOfBounds(targetPos))) {
+                Vector3 dir = worldCenter - pos;
+
+                pos -= dir * 0.5f;
+            }
+
+            return pos;
+        }
+
         private bool IsOutOfBounds(Vector2Int cell) =>
             cell.x < 0 || cell.x >= gridWidth || cell.y < 0 || cell.y >= gridHeight;
 
@@ -123,13 +143,7 @@ namespace CozyPolyomino
 
             Gizmos.color = Color.yellowNice;
 
-            Vector3 gridCenter = transform.position + new Vector3(
-                gridWidth * cellSize * 0.5f - cellSize * 0.5f,
-                0,
-                gridHeight * cellSize * 0.5f - cellSize * 0.5f
-            );
-
-            Gizmos.DrawWireCube(gridCenter, new Vector3(gridWidth * cellSize, 0.2f, gridHeight * cellSize));
+            Gizmos.DrawWireCube(WorldCenter, new Vector3(gridWidth * cellSize, 0.2f, gridHeight * cellSize));
         }
 
 #endif

@@ -161,6 +161,8 @@ namespace CozyPolyomino
 
             if (_gridController.CanPlaceShape(pivotGridPos, _currentShapeCells))
                 PlaceShape(pivotGridPos);
+            else
+                _transform.position = GridController.Instance.GetOutOfGridPos(_transform.position, _currentShapeCells);
 
             GridDrawer.Instance.ResetGridColors();
             
