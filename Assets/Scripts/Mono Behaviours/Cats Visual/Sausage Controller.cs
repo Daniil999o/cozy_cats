@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SausageRotation : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class SausageRotation : MonoBehaviour
     private bool _isReturning;
     private bool _initialized;
 
+    private IEnumerator _setDragCoroutine;
+
     private void Start() {
         if (bones == null || bones.Length == 0) return;
 
@@ -44,8 +47,19 @@ public class SausageRotation : MonoBehaviour
     }
 
     public void SetDragging(bool dragging) {
-        if (_isDragging == dragging) return;
+        if (_setDragCoroutine != null)
+            StopCoroutine(_setDragCoroutine);
 
+        _setDragCoroutine = IE_SetDragging(dragging, dragging ? 0.2f : 0f);
+        
+        StartCoroutine(_setDragCoroutine);
+    }
+
+    private IEnumerator IE_SetDragging(bool dragging, float delay) {
+        if (_isDragging == dragging) yield break;
+
+        yield return new WaitForSeconds(delay);
+        
         _isDragging = dragging;
 
         if (dragging) {
