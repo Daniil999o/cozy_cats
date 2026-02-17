@@ -1,0 +1,79 @@
+Version - 3.0
+
+New Features:
+v 1.2:
+* Work has been done with links
+* Main method - OpenDeveloperPage([int or string] developerId)
+* For CDA Games - OpenCDA_GamesPage()
+* For telegram channel, set TelegramChannel parameter to nickname of your channel in the telegram
+* To open telegram page use OpenTelegram() method
+
+v 1.3:
+* New class ListExtensions
+
+v 1.4:
+* New methods in class YG_GameMenu NextScene() and NextSceneAsync()
+
+v 1.5:
+* YG_Provider: Added support for Payments methods
+
+v 1.6:
+* Telegram changed
+
+v 1.7:
+* Changed the definition of YG_Provider.IsMobile
+* The list extension method has been added to ListExtensions.Choice()
+* Added the SerializedDictionary<TKey, TValue> structure
+
+v 1.8:
+* Added scripts for trigger actions to the Scripts/Useful/Triggers folder. Two main components: TriggerEvent and TriggerTarget
+
+v 1.9:
+* YG_GameMenu.Instance
+
+v 2.0:
+* Promo codes system
+* Many features in Useful folder
+
+v 2.1:
+* Added the YG_AnimatorEditor script, which applies the animation frame to the selected object. Facilitates positioning on stage. The window is called via the YG Plugin Provider/Tools/Animator Editor tab
+
+v 2.2:
+* Added the YG_ScreenCapture script to create screenshots. The window opens using the YG Plugin Provider/Tools/Screen Capture tab
+
+v 2.3:
+* Many features
+
+v 2.4:
+* Much more features
+
+v 2.5:
+* Optimization - YG_DistanceChecker
+
+v 2.6:
+* ALMOST NEW
+
+v 3.0:
+* Dialogues
+* MORE!!!!
+
+v 3.2
+* Added localization system
+* Added extras. methods for AudioSource, creating fast sound effects
+* Added TimeScaler Window to speed up time quickly via add-ons. window
+* The menu is not localized yet
+
+v 3.3:
+* Improved localization system: fixed bugs, added the ability to copy keys
+
+v 3.4:
+* Localization: added a default preset from the AutoLocalization/_Resources_ folder
+* Added new languages, the ability to copy to AutoLocalization/SceneManager
+
+v 3.5:
+* Optimized Mesh Collider
+* Optimize Mesh
+* Optimize Transform
+
+v 3.6:
+* Added folder Resources

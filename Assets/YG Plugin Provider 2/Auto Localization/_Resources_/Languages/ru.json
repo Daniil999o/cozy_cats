@@ -1,0 +1,23 @@
+﻿{
+  "localization_name": "Русский",
+  
+  "pause": "Пауза",
+  "continue": "Продолжить",
+  "settings": "Настройки",
+  "restart": "Заново",
+  "menu": "Меню",
+  "back": "Назад",
+  
+  "quality": "Качество",
+  "language": "Язык",
+  "sensitivity": "Чувствительность",
+  "music": "Музыка",
+  "sounds": "Звуки",
+
+  "very low": "Очень низкое",
+  "low": "Низкое",
+  "medium": "Среднее",
+  "high": "Высокое",
+  "very high": "Очень высокое",
+  "ultra": "Ультра"
+}

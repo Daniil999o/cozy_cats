@@ -1,0 +1,48 @@
+{
+    "groups": [
+        {
+            "name": "Menu",
+            "keys": [
+                "pause",
+                "continue",
+                "settings",
+                "restart",
+                "menu",
+                "back"
+            ],
+            "expanded": false
+        },
+        {
+            "name": "Settings",
+            "keys": [
+                "quality",
+                "language",
+                "sensitivity",
+                "music",
+                "sounds"
+            ],
+            "expanded": false
+        },
+        {
+            "name": "Quality",
+            "keys": [
+                "very low",
+                "low",
+                "medium",
+                "high",
+                "very high",
+                "ultra"
+            ],
+            "expanded": false
+        },
+        {
+            "name": "Ungrouped",
+            "keys": [
+                "localization_name",
+                "mobile",
+                "pc"
+            ],
+            "expanded": false
+        }
+    ]
+}

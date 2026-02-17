@@ -1,0 +1,22 @@
+{
+  "localization_name": "English",
+  "pause": "Pause",
+  "continue": "Continue",
+  "settings": "Settings",
+  "restart": "Restart",
+  "menu": "Menu",
+  "back": "Back",
+  "quality": "Quality",
+  "language": "Language",
+  "sensitivity": "Sensitivity",
+  "music": "Music",
+  "sounds": "Sounds",
+  "very low": "Very Low",
+  "low": "Low",
+  "medium": "Medium",
+  "high": "High",
+  "very high": "Very High",
+  "ultra": "Ultra",
+  "mobile": "Mobile",
+  "pc": "PC"
+}
