@@ -276,13 +276,7 @@ public class YG_GameMenu : MonoBehaviour
         }
 
         if (changeCursorLock) {
-            if (YG_Provider.IsMobile) {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            } else {
-                Cursor.visible = Paused ? pauseCursorVisible : playCursorVisible;
-                Cursor.lockState = Paused ? pauseCursorMode : playCursorMode;
-            }
+            UpdateCursorLock(Paused);
         }
         
         foreach (var x in showWhenPaused) x.SetActive(Paused);
@@ -296,6 +290,16 @@ public class YG_GameMenu : MonoBehaviour
             YG_Provider.GameplayStart();
         
         OnPauseUpdate?.Invoke(Paused);
+    }
+
+    public void UpdateCursorLock(bool value) {
+        if (YG_Provider.IsMobile) {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        } else {
+            Cursor.visible = value ? pauseCursorVisible : playCursorVisible;
+            Cursor.lockState = value ? pauseCursorMode : playCursorMode;
+        }
     }
 
     public void PauseUnpause() {

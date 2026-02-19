@@ -32,6 +32,10 @@ public class MusicPlayer : MonoBehaviour
         _source.Stop();
     }
 
+    private void OnDisable() {
+        _timer = 0f;
+    }
+
     private void Update() {
         if (_timer <= 0f)
             PlayRandomClip();
@@ -42,8 +46,13 @@ public class MusicPlayer : MonoBehaviour
     private void PlayRandomClip() {
         int myTrack;
         
-        do myTrack = Random.Range(0, musicTracks.Length);
-        while (dontRepeat && myTrack == _oldTrackIndex);
+        if (musicTracks.Length > 1) {
+            do
+                myTrack = Random.Range(0, musicTracks.Length);
+            while (dontRepeat && myTrack == _oldTrackIndex);
+        } else {
+            myTrack = 0;
+        }
 
         _source.volume = musicTracks[myTrack].volume * globalVolume;
         _source.clip = musicTracks[myTrack].clip;

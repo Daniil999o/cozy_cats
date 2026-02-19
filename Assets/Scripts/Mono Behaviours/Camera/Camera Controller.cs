@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,15 +14,47 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private Vector3 minConstraints = new Vector3(-5f, 0f, -3f);
     [SerializeField] private Vector3 maxConstraints = new Vector3(5f, 5f, 3f);
+
+    [Space]
+
+    [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference sprintAction;
     
     private Transform _transform;
     private Vector3 _delta;
 
+    private bool _isMobile;
+
     private void Awake() {
         _transform = GetComponent<Transform>();
     }
+
+    private void Start() {
+        _isMobile = YG_Provider.IsMobile;
+    }
+
+    private void OnEnable() {
+        moveAction.action.Enable();
+        sprintAction.action.Enable();
+    }
+
+    private void OnDisable() {
+        moveAction.action.Disable();
+        sprintAction.action.Disable();
+    }
     
     private void LateUpdate() {
+        if (!_isMobile) {
+            Vector2 inputDelta = moveAction.action.ReadValue<Vector2>();
+
+            if (inputDelta.magnitude > 0f) {
+                float speed = sprintAction.action.IsPressed() ? 12f : 6f;
+                
+                _delta.x = inputDelta.x * speed;
+                _delta.z = inputDelta.y * speed;
+            }
+        }
+        
         _delta.x *= horSpeed;
         _delta.z *= verSpeed;
         

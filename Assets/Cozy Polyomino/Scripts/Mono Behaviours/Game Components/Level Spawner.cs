@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 namespace CozyPolyomino
 {
@@ -41,17 +40,17 @@ namespace CozyPolyomino
         }
 
 #endif
-
-        private void Start() {
+        
+        public void RegenerateLevel() {
             currentLevel = CurrentLevel;
             
-            SpawnLevel();
-        }
-        
-        private void SpawnLevel() {
+            _win = false;
+            
             spawnedObjects.Where(x => x).ToList().ForEach(Destroy);
             
-            spawnedObjects.Clear();
+            spawnedObjects = new List<GameObject>();
+            spawnedDraggables = new List<DraggableShape>();
+            
             ObstacleSpawner.Instance.ClearObstacles();
 
             LevelData level = levelSystem.GetLevel(currentLevel);
@@ -100,6 +99,8 @@ namespace CozyPolyomino
                         break;
                 }
             }
+            
+            GridDrawer.Instance.Initialize();
         }
 
         private void CheckAllDraggables() {
@@ -118,7 +119,8 @@ namespace CozyPolyomino
 
         public void NextLevel() {
             CurrentLevel++;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            currentLevel = CurrentLevel;
+            RegenerateLevel();
         }
     }
 }

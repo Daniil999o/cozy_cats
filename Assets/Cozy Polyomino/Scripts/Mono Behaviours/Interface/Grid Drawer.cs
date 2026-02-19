@@ -25,7 +25,7 @@ namespace CozyPolyomino
             }
         }
 
-        private void Start() {
+        internal void Initialize() {
             GenerateGridVisuals();
             ResetGridColors();
         }

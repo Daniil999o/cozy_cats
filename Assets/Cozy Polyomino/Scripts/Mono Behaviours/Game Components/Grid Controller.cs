@@ -24,8 +24,8 @@ namespace CozyPolyomino
         [Header("Camera")]
         [SerializeField] private Camera playerCamera;
 
-        private readonly HashSet<Vector2Int> _occupiedByShapes = new HashSet<Vector2Int>();
-        private readonly HashSet<Vector2Int> _occupiedByObstacles = new HashSet<Vector2Int>();
+        private HashSet<Vector2Int> _occupiedByShapes = new HashSet<Vector2Int>();
+        private HashSet<Vector2Int> _occupiedByObstacles = new HashSet<Vector2Int>();
 
         private float _halfCellSize;
 
@@ -43,6 +43,9 @@ namespace CozyPolyomino
         internal static Camera MainCamera => Instance?.playerCamera;
 
         internal void Initialize() {
+            _occupiedByShapes = new HashSet<Vector2Int>();
+            _occupiedByObstacles = new HashSet<Vector2Int>();
+            
             _halfCellSize = cellSize * 0.5f;
             
             Vector3 pos = new Vector3(-gridWidth * 0.5f, 0f, -gridHeight * 0.5f);
