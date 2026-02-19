@@ -102,10 +102,13 @@ namespace CozyPolyomino
             _occupiedByObstacles.Clear();
         }
 
-        internal Vector3 GetOutOfGridPos(Vector3 pos, Vector2Int[] cells) {
+        internal Vector3 GetOutOfGridPos(DraggableShape shape, Vector2Int[] cells) {
             Vector3 worldCenter = WorldCenter;
+
+            Vector3 pos = shape.Center;
             
-            while (cells.Select(cellOffset => WorldToGrid(pos) + cellOffset)
+            while (Vector3.Distance(pos, WorldCenter) < Mathf.Max(gridWidth, gridHeight)
+                   || cells.Select(cellOffset => WorldToGrid(pos) + cellOffset)
                    .Any(targetPos => !IsOutOfBounds(targetPos))) {
                 Vector3 dir = worldCenter - pos;
 

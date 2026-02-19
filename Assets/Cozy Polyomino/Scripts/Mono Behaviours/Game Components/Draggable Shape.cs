@@ -14,6 +14,9 @@ namespace CozyPolyomino
         [Space]
 
         [SerializeField] private Transform dragModel;
+        [SerializeField] private Transform center;
+
+        internal Vector3 Center => center ? center.position : _transform.position;
 
         [Space]
 
@@ -50,6 +53,7 @@ namespace CozyPolyomino
         private float _yOffset;
 
         internal Action OnPlaced;
+        private Action<DraggableShape, bool> _onDrop;
         
         private static DraggableShape CurrentDraggable { get; set; }
 
@@ -60,6 +64,14 @@ namespace CozyPolyomino
             
             _gridController = GridController.Instance;
             _dragOptions = GridController.DraggableOptions;
+        }
+
+        private void OnEnable() {
+            _onDrop += GameEffects.Drop;
+        }
+
+        private void OnDisable() {
+            _onDrop -= GameEffects.Drop;
         }
 
         private void Start() {
@@ -159,15 +171,19 @@ namespace CozyPolyomino
 
             Vector2Int pivotGridPos = _gridController.WorldToGrid(targetPos);
 
-            if (_gridController.CanPlaceShape(pivotGridPos, _currentShapeCells))
+            bool isCorrect = _gridController.CanPlaceShape(pivotGridPos, _currentShapeCells);
+
+            if (isCorrect)
                 PlaceShape(pivotGridPos);
             else
-                _transform.position = GridController.Instance.GetOutOfGridPos(_transform.position, _currentShapeCells);
+                _transform.position = GridController.Instance.GetOutOfGridPos(this, _currentShapeCells);
 
             GridDrawer.Instance.ResetGridColors();
             
             onEndDrag?.Invoke(this);
             HoverGrid = false;
+            
+            _onDrop?.Invoke(this, isCorrect);
         }
 
         private void PlaceShape(Vector2Int gridPos) {
