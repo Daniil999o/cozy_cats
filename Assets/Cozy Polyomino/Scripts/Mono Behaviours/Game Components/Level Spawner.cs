@@ -21,6 +21,7 @@ namespace CozyPolyomino
 
         [SerializeField] private Transform objectsParent;
         [SerializeField] private Bounds elementsSpawnerBounds;
+        [SerializeField] private Bounds elementsNoSpawnBounds;
         [SerializeField] private List<GameObject> spawnedObjects = new List<GameObject>();
         [SerializeField] private List<DraggableShape> spawnedDraggables = new List<DraggableShape>();
 
@@ -35,6 +36,8 @@ namespace CozyPolyomino
         private void OnDrawGizmosSelected() {
             Gizmos.color = Color.aquamarine;
             Gizmos.DrawWireCube(elementsSpawnerBounds.center, elementsSpawnerBounds.size);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(elementsNoSpawnBounds.center, elementsNoSpawnBounds.size);
         }
 
 #endif
@@ -65,11 +68,16 @@ namespace CozyPolyomino
 
                 switch (obj.objectType) {
                     case ObjectType.DraggableObject:
-                        Vector3 randomPos = new Vector3(
-                            Random.Range(elementsSpawnerBounds.min.x, elementsSpawnerBounds.max.x),
-                            Random.Range(elementsSpawnerBounds.min.y, elementsSpawnerBounds.max.y),
-                            Random.Range(elementsSpawnerBounds.min.z, elementsSpawnerBounds.max.z)
-                        );
+                        Vector3 randomPos;
+                        
+                        do {
+                            randomPos = new Vector3(
+                                Random.Range(elementsSpawnerBounds.min.x, elementsSpawnerBounds.max.x),
+                                Random.Range(elementsSpawnerBounds.min.y, elementsSpawnerBounds.max.y),
+                                Random.Range(elementsSpawnerBounds.min.z, elementsSpawnerBounds.max.z)
+                            );
+                        } while (elementsNoSpawnBounds.Contains(randomPos));
+
 
 
                         DraggableShape spawned = Instantiate(shapeObjects.draggableShape, randomPos,
