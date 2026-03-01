@@ -53,4 +53,43 @@ public static class ListExtensions
     public static T GetElement<T>(this T[] array, int id) => array.ToList().GetElement(id);
     
     public static T GetElement<T>(this HashSet<T> hashSet, int id) => hashSet.ToList().GetElement(id);
+
+    public static T[] SetToFirstEmpty<T>(this T[] array, T value) {
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i] != null) continue;
+            
+            array[i] = value;
+            break;
+        }
+
+        return array;
+    }
+
+    public static List<T> SetToFirstEmpty<T>(this List<T> list, T value) =>
+        SetToFirstEmpty(list.ToArray(), value).ToList();
+    
+    
+    public static bool SetToFirstEmpty<T>(this T[] array, T value, out T[] result) {
+        bool set = false;
+        
+        for (int i = 0; i < array.Length; i++) {
+            if (array[i] != null) continue;
+            
+            array[i] = value;
+            set = true;
+            break;
+        }
+
+        result = array;
+
+        return set;
+    }
+
+    public static bool SetToFirstEmpty<T>(this List<T> list, T value, out List<T> result) {
+        bool set = SetToFirstEmpty(list.ToArray(), value, out T[] arrayResult);
+
+        result = arrayResult.ToList();
+
+        return set;
+    }
 }

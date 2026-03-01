@@ -18,5 +18,9 @@
   "very high": "Very High",
   "ultra": "Ultra",
   "mobile": "Mobile",
-  "pc": "PC"
+  "pc": "PC",
+  "room_customize_material": "Change material",
+  "wall_sticks": "Turquoise",
+  "wall_kids": "Childishness",
+  "wall_hearts": "Pink hearts"
 }

@@ -402,4 +402,12 @@ public class YG_Provider : MonoBehaviour
     }
 
     #endregion
+    
+    #region SAVES
+    
+    public static SavesYG Saves => YandexGame.savesData;
+        
+    public static void SaveProgress() => YandexGame.SaveProgress();
+
+#endregion
 }

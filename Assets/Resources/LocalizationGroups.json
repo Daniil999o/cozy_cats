@@ -42,7 +42,23 @@
                 "mobile",
                 "pc"
             ],
-            "expanded": false
+            "expanded": true
+        },
+        {
+            "name": "Room UI",
+            "keys": [
+                "room_customize_material"
+            ],
+            "expanded": true
+        },
+        {
+            "name": "Custom Materials",
+            "keys": [
+                "wall_sticks",
+                "wall_kids",
+                "wall_hearts"
+            ],
+            "expanded": true
         }
     ]
 }

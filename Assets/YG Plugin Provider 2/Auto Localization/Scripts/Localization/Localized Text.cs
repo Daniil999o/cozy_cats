@@ -9,6 +9,7 @@ namespace AutoLocalization.Localization
     {
         [Space]
 
+        [SerializeField] private bool applyValue;
         [SerializeField] private bool autoKey;
         [SerializeField] private bool autoKeyParent;
         
@@ -22,6 +23,8 @@ namespace AutoLocalization.Localization
             tmpText = GetComponent<TMP_Text>();
         }
 
+#if UNITY_EDITOR
+        
         private void OnValidate() {
             if (autoKey) {
                 autoKey = false;
@@ -34,7 +37,19 @@ namespace AutoLocalization.Localization
 
                 if (transform.parent) localizationKey = transform.parent.name.ToLower();
             }
+
+            if (applyValue) {
+                Awake();
+                
+                applyValue = false;
+                UpdateText(AutoLocalizationHandler.GetLocalizedText(localizationKey,
+                        AutoLocalizationHandler.CurrentLanguage
+                    )
+                );
+            }
         }
+        
+#endif
 
         protected override void UpdateText(string localizedText) {
             if (text) text.text = localizedText;

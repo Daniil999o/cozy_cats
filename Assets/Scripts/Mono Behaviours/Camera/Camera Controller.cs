@@ -19,9 +19,16 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private InputActionReference moveAction;
     [SerializeField] private InputActionReference sprintAction;
+
+    [Space]
+
+    [SerializeField] private bool canRotate;
+    [SerializeField] private float rotSpeed = 4f;
+    [SerializeField] private Vector2 clampRot = new Vector2(-80f, 80f);
     
     private Transform _transform;
-    private Vector3 _delta;
+    private Vector3 _moveDelta;
+    private Vector3 _rotDelta;
 
     private bool _isMobile;
 
@@ -50,17 +57,17 @@ public class CameraController : MonoBehaviour
             if (inputDelta.magnitude > 0f) {
                 float speed = sprintAction.action.IsPressed() ? 12f : 6f;
                 
-                _delta.x = inputDelta.x * speed;
-                _delta.z = inputDelta.y * speed;
+                _moveDelta.x = inputDelta.x * speed;
+                _moveDelta.z = inputDelta.y * speed;
             }
         }
         
-        _delta.x *= horSpeed;
-        _delta.z *= verSpeed;
+        _moveDelta.x *= horSpeed;
+        _moveDelta.z *= verSpeed;
         
-        _transform.Translate(_delta * Time.smoothDeltaTime);
+        _transform.Translate(_moveDelta * Time.smoothDeltaTime);
         
-        _delta = Vector3.zero;
+        _moveDelta = Vector3.zero;
 
         Vector3 pos = _transform.position;
         pos.x = Mathf.Clamp(pos.x, minConstraints.x, maxConstraints.x);
@@ -68,9 +75,32 @@ public class CameraController : MonoBehaviour
         pos.z = Mathf.Clamp(pos.z, minConstraints.z, maxConstraints.z);
         
         _transform.position = pos;
+
+        _rotDelta *= rotSpeed;
+
+        _transform.Rotate(_rotDelta * Time.smoothDeltaTime);
+
+        Vector3 angles = _transform.localEulerAngles;
+        
+        float xAngle = angles.x;
+        
+        if (xAngle > 180f) xAngle -= 360f;
+
+        xAngle = Mathf.Clamp(xAngle, clampRot.x, clampRot.y);
+        
+        angles.x = xAngle;
+        angles.z = 0f;
+
+        _transform.localRotation = Quaternion.Euler(angles);
+        
+        _rotDelta = Vector2.zero;
     }
     
     public void Move(Vector2 delta) {
-        _delta = new Vector3(-delta.x, 0f, -delta.y);
+        _moveDelta = new Vector3(-delta.x, 0f, -delta.y);
+    }
+
+    public void Rotate(Vector2 delta) {
+        _rotDelta = new Vector3(-delta.y, delta.x, 0f);
     }
 }

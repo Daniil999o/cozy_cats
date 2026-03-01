@@ -29,7 +29,7 @@ namespace AutoLocalization
             }
         }
         
-        private const string DefaultLangCode = "en";
+        public const string DefaultLangCode = "en";
 
         internal static string[] CurrentLanguages => CurrentLanguagesFiles;
 

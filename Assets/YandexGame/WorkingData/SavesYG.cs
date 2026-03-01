@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace YG
 {
     [System.Serializable]
@@ -31,6 +32,14 @@ namespace YG
         // === YOUR SAVES ===
         
             // SAVES
+
+            public int gems = 0;
+            public int megas = 0;
+            
+            public string[] savedMaterials = new string[300];
+
+            public string[] savedObjectsId = new string[100];
+            public string[] currentObjectsMaterials = new string[100];
         
         // === YOUR SAVES ===
         
