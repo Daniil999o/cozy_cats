@@ -5,6 +5,16 @@ public class UIModularMenu : MonoBehaviour
 {
     [SerializeField] private GameObject[] menus;
 
+    [Space]
+    
+    [SerializeField] private GameObject[] otherUIElements;
+
+    public bool UIElementsEnabled {
+        set {
+            foreach (var x in otherUIElements) x.SetActive(value);
+        }
+    }
+
     private GameObject _oldMenu;
 
     private void Start() {

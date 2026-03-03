@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Custom Material", menuName = "Room Customization/Custom Materials")]
+[CreateAssetMenu(fileName = "Custom Materials", menuName = "Room Customization/Custom Materials")]
 public class CustomMaterialsSO : ScriptableObject
 {
     [SerializeField] private CustomMaterialSO[] myCustomMaterials;
@@ -11,4 +11,5 @@ public class CustomMaterialsSO : ScriptableObject
     public Material GetMaterial(int index) => myCustomMaterials[index].material;
 
     public Material GetMaterial(string id) => myCustomMaterials.FirstOrDefault(x => x.id == id)?.material;
+    public CustomMaterialSO GetMaterialSO(string id) => myCustomMaterials.FirstOrDefault(x => x.id == id);
 }

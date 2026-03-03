@@ -1,4 +1,6 @@
 ﻿using TMPro;
+using System;
+using System.Linq;
 using UnityEngine;
 
 public class UIModularListWindow : MonoBehaviour, IUIModalWindow
@@ -30,7 +32,14 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
     public void UpdateList() => UpdateList(_oldInfos);
 
     public bool Active => windowRoot.activeSelf;
+    
+    public Action OnClose { get; set; }
 
+    public void CloseButton() {
+        OnClose?.Invoke();
+        Close();
+    }
+    
     public void Close() {
         ClearList();
         windowRoot.SetActive(false);
@@ -38,6 +47,8 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
 
     private void UpdateList(UIModularListElementInfo[] infos) {
         ClearList();
+
+        infos = infos.OrderBy(x => x.Price).ToArray();
         
         foreach (var x in infos)
             SpawnListElement(x);

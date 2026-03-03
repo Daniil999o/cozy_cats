@@ -1,6 +1,5 @@
-using Sirenix.Utilities;
-using System.Linq;
 using UnityEngine;
+using System.Linq;
 
 public class RoomObjectMaterialChanger : MonoBehaviour
 {
@@ -27,7 +26,7 @@ public class RoomObjectMaterialChanger : MonoBehaviour
         public CustomMaterialsSO customMaterials;
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
 
     private void OnValidate() {
         if (autoSet) {
@@ -38,7 +37,7 @@ public class RoomObjectMaterialChanger : MonoBehaviour
         autoSet = false;
     }
     
-    #endif
+#endif
     
     private void Start() {
         UpdateMaterial();
@@ -46,17 +45,13 @@ public class RoomObjectMaterialChanger : MonoBehaviour
 
     public void UpdateMaterial() {
         string myId = RoomShop.GetObjectMaterial(ElementId);
-        
-        Debug.Log($"First: {myId}");
 
-        if (myId.IsNullOrWhitespace()) {
+        if (myId.IsEmptyOrWhiteSpaces()) {
             myId = FirstMaterial.All[0].id;
 
             RoomShop.BuyCustomMaterial(myId);
             RoomShop.SetObjectMaterial(ElementId, myId);
         }
-        
-        Debug.Log($"Next: {myId}");
         
         UpdateMaterial(myId);
     }
@@ -67,8 +62,16 @@ public class RoomObjectMaterialChanger : MonoBehaviour
         for (int i = 0; i < renderMaterials.Length; i++) {
             CustomIndexedMaterial collectedMat = customIndexedMaterials.FirstOrDefault(x => x.index == i);
 
-            if (collectedMat != null)
-                renderMaterials[i] = collectedMat.customMaterials.GetMaterial(currentId);
+            if (collectedMat == null) continue;
+            
+            CustomMaterialSO myMat = collectedMat.customMaterials.GetMaterialSO(currentId);
+
+            if (myMat.mesh) {
+                GetComponent<MeshFilter>().mesh = myMat.mesh;
+                    
+                return;
+            }
+            renderMaterials[i] = myMat.material;
         }
         
         customRenderer.materials = renderMaterials;

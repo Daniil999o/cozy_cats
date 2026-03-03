@@ -5,6 +5,7 @@ public class CustomMaterialSO : ScriptableObject
 {
     public string id;
     public Material material;
+    public Mesh mesh;
     [SerializeField] private Sprite customPreview;
     public int price;
 

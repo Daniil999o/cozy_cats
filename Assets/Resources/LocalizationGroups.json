@@ -47,7 +47,8 @@
         {
             "name": "Room UI",
             "keys": [
-                "room_customize_material"
+                "room_customize_material",
+                "room_customize_skin"
             ],
             "expanded": true
         },
@@ -56,9 +57,55 @@
             "keys": [
                 "wall_sticks",
                 "wall_kids",
-                "wall_hearts"
+                "wall_hearts",
+                "carpet_lapki",
+                "carpet_lines",
+                "carpet_frog",
+                "carpet_cat",
+                "nightstand_default",
+                "nightstand_skandinav",
+                "nightstand_pastel",
+                "nightstand_darkwood",
+                "nightstand_sunny",
+                "wall_mint",
+                "wall_goroshek",
+                "wall_klubnika",
+                "wall_cosmos",
+                "floor_default",
+                "floor_elochki",
+                "floor_plitka",
+                "floor_fluffy",
+                "floor_white_planks",
+                "ceiling_blue_sky",
+                "ceiling_night",
+                "ceiling_midnight",
+                "ceiling_balki",
+                "ceiling_starsss",
+                "door_default",
+                "door_yellow",
+                "door_mint",
+                "door_night",
+                "door_monsters",
+                "door_modern",
+                "door_reshetki",
+                "door_ambar",
+                "door_prison",
+                "door_cafe",
+                "door_forest"
             ],
             "expanded": true
+        },
+        {
+            "name": "Custom Skins",
+            "keys": [
+                "bedside_table_1",
+                "bedside_table_2",
+                "bedside_table_3",
+                "bedside_table_4",
+                "bedside_table_5",
+                "bedside_table_6"
+            ],
+            "expanded": false
         }
     ]
 }

@@ -35,11 +35,16 @@ namespace YG
 
             public int gems = 0;
             public int megas = 0;
+
+            public float dayValue = 1f;
             
             public string[] savedMaterials = new string[300];
+            public string[] savedSkins = new string[300];
 
             public string[] savedObjectsId = new string[100];
+            
             public string[] currentObjectsMaterials = new string[100];
+            public string[] currentObjectsSkins = new string[100];
         
         // === YOUR SAVES ===
         
