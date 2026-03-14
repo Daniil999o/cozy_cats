@@ -52,6 +52,4 @@ public class RoomSkinListElementInfo : UIModularListElementInfo
 {
     public RoomObjectSkinChanger MyRoomObject { get; set; }
     public CustomSkinSO MySkin { get; set; }
-    
-    public virtual UIModularListWindow ModularListWindow { get; set; }
 }

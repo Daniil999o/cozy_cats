@@ -59,7 +59,7 @@ namespace TMPro.Examples
                     vertexColors[vertexIndex + 2] = c;
                     vertexColors[vertexIndex + 3] = c;
 
-                    //m_TextMeshPro.mesh.colors32 = vertexColors;
+                    //m_TextMeshPro.objectPrefab.colors32 = vertexColors;
                     m_TextMeshPro.textInfo.meshInfo[meshIndex].mesh.colors32 = vertexColors;
                 }
                 #endregion

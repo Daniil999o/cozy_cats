@@ -20,6 +20,7 @@ public class UIModularListElement : MonoBehaviour
     }
 }
 
+[System.Serializable]
 public class UIModularListElementInfo
 {
     public virtual string Title { get; set; }
@@ -27,4 +28,6 @@ public class UIModularListElementInfo
     public virtual int Price { get; set; }
     
     public virtual Sprite Icon { get; set; }
+    
+    public virtual UIModularListWindow ModularListWindow { get; set; }
 }

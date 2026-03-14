@@ -132,10 +132,12 @@ public class RoomObjectTransformation : MonoBehaviour, IBeginDragHandler, IDragH
         mainObject.SetDrag(false);
 
         AlignObject();
+        
+        mainObject.SaveObject();
     }
 
     private void AlignObject() {
-        bool hasPenetration = ResolvePenetrations();
+        bool hasPenetration = true;//ResolvePenetrations();
 
         if (hasPenetration) {
             for (int i = 0; i < 10; i++) {
@@ -143,7 +145,7 @@ public class RoomObjectTransformation : MonoBehaviour, IBeginDragHandler, IDragH
 
                 if (IsPositionValidInRooms(_objT.position, _objT.rotation)) break;
 
-                ResolvePenetrations();
+                // ResolvePenetrations();
             }
 
             CorrectPosition();
@@ -207,7 +209,7 @@ public class RoomObjectTransformation : MonoBehaviour, IBeginDragHandler, IDragH
     }
 
     private void CorrectPosition() {
-        Ray ray = new Ray(_objT.position, Vector3.down);
+        Ray ray = new Ray(_objT.position + Vector3.up * 0.1f, Vector3.down);
 
         if (!Physics.Raycast(
                 ray, out RaycastHit hit, 100f, RoomUIHandler.Instance.RaycastLayerMask

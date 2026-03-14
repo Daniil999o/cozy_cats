@@ -1,6 +1,12 @@
 ﻿using System.Linq;
 using UnityEngine;
 
+#if ODIN_INSPECTOR
+
+using Sirenix.OdinInspector;
+
+#endif
+
 public class UIModularMenu : MonoBehaviour
 {
     [SerializeField] private GameObject[] menus;
@@ -20,7 +26,12 @@ public class UIModularMenu : MonoBehaviour
     private void Start() {
         EnableMenu(0);
     }
-
+    
+#if ODIN_INSPECTOR
+    
+    [Button]
+    
+#endif
     public void EnableMenu(int index) {
         if (!menus.InLength(index)) return;
         

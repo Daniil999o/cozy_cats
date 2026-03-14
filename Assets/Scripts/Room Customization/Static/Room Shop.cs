@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using UnityEngine;
+using System.Linq;
 
 public static class RoomShop
 {
@@ -102,6 +103,58 @@ public static class RoomShop
 #endregion
     
 #region SAVED OBJECTS
+
+    public static string[] GetSavedObjectsData() => YG_Provider.Saves.savedObjectsData;
+
+    public static string CreateNewObject(string baseName, GameObject obj) {
+        string newName = baseName;
+        
+        if (obj) newName += obj.GetInstanceID().ToString();
+
+        int length = YG_Provider.Saves.savedObjectsId.Length + 10;
+        while (length > 0 && YG_Provider.Saves.savedObjectsId.Contains(newName)) {
+            newName += "_1";
+            length--;
+        }
+
+        return newName;
+    }
+
+    public static void RemoveObjectData(string objectId) {
+        for (int i = 0; i < YG_Provider.Saves.savedObjectsId.Length; i++) {
+            if (YG_Provider.Saves.savedObjectsId[i] != objectId) continue;
+            
+            YG_Provider.Saves.savedObjectsId[i] = null;
+                
+            YG_Provider.Saves.savedObjectsData[i] = null;
+                
+            YG_Provider.Saves.currentObjectsMaterials[i] = null;
+            YG_Provider.Saves.currentObjectsSkins[i] = null;
+        }
+        
+        YG_Provider.SaveProgress();
+    }
+
+    public static void SaveObjectData(string objectId, RoomObject obj) {
+        int id = GetObjectSavedIndex(objectId);
+        
+        if (id == -1) return;
+
+        string data = GetObjectData(id);
+
+        SaveData saveData = RoomObjectsDataPackager.DecryptData(data);
+        
+        if (saveData != null && saveData.ElementId != objectId)
+            return;
+
+        data = RoomObjectsDataPackager.GetData(obj);
+        
+        YG_Provider.Saves.savedObjectsData[id] = data;
+        
+        YG_Provider.SaveProgress();
+    }
+
+    private static string GetObjectData(int index) => YG_Provider.Saves.savedObjectsData[index];
     
     private static int GetObjectSavedIndex(string objectId) {
         string[] ids = YG_Provider.Saves.savedObjectsId;
@@ -181,8 +234,15 @@ public static class RoomShop
         YG_Provider.Saves.megas = 0;
 
         YG_Provider.Saves.savedMaterials = new string[300];
+        YG_Provider.Saves.savedSkins = new string[300];
+        
         YG_Provider.Saves.savedObjectsId = new string[100];
+        YG_Provider.Saves.savedObjectsData = new string[100];
+        
         YG_Provider.Saves.currentObjectsMaterials = new string[100];
+        YG_Provider.Saves.currentObjectsSkins = new string[100];
+
+        YG_Provider.Saves.dayValue = 1f;
         
         YG_Provider.SaveProgress();
         

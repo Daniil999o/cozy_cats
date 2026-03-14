@@ -25,6 +25,11 @@ public class RoomUIHandler : MonoBehaviour
     [SerializeField] private UIModularListWindow customizeMaterialsList;
     [SerializeField] private UIModularListWindow customizeSkinsList;
 
+    [Space]
+
+    [SerializeField] private string destroyObjectTitleId = "destroy_object_title";
+    [SerializeField] private UIModularDialogueWindow dialogueWindow;
+
     private static RoomUIHandler _instance;
 
     public static RoomUIHandler Instance {
@@ -41,12 +46,24 @@ public class RoomUIHandler : MonoBehaviour
 
     private RoomObjectUI _oldObjectUI;
 
+    private RoomObjectDestroyable _oldDestroyable;
+
     private RoomObjectUI[] UIElements =>
         FindObjectsByType<RoomObjectUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
     private IUIModalWindow[] ModalWindows => GetComponentsInChildren<IUIModalWindow>(true);
 
     public bool HUDVisible { get; private set; }
+    
+    public RoomObjectUI HUDOnlyObject { get; set; }
+
+    public void ShowHUDOnlyFor(RoomObjectUI roomObjectUI) {
+        foreach (var x in UIElements) x.HUDVisible = false;
+
+        roomObjectUI.HUDVisible = true;
+
+        HUDOnlyObject = roomObjectUI;
+    }
 
     private void OnEnable() {
         foreach (var x in ModalWindows) x.OnClose += DiscardEvents;
@@ -59,6 +76,8 @@ public class RoomUIHandler : MonoBehaviour
     public void ShowUI() {
         HUDVisible = true;
         foreach (var x in UIElements) x.HUDVisible = true;
+        
+        HUDOnlyObject = null;
     }
 
     public void DiscardEvents() {
@@ -70,6 +89,7 @@ public class RoomUIHandler : MonoBehaviour
         
         customizeMaterialsList.Close();
         customizeSkinsList.Close();
+        dialogueWindow.Close();
 
         if (_transformation) {
             _transformation.Move = false;
@@ -86,10 +106,24 @@ public class RoomUIHandler : MonoBehaviour
         
         foreach (var x in UIElements) x.HUDVisible = false;
         foreach (var x in ModalWindows) x.Close();
+
+        HUDOnlyObject = null;
     }
 
     public void DestroyObjectRequest(RoomObjectDestroyable destroyable) {
-        Destroy(destroyable.gameObject);
+        string title = AutoLocalizationHandler.GetLocalizedText(destroyObjectTitleId);
+        title += $" {destroyable.Name}?";
+
+        _oldDestroyable = destroyable;
+
+        dialogueWindow.OnAnswerReturn += DestroyObjectCheckAnswer;
+        dialogueWindow.Show(title);
+    }
+
+    private void DestroyObjectCheckAnswer(UIModularDialogueAnswer answer) {
+        if (answer != UIModularDialogueAnswer.Yes) return;
+        
+        _oldDestroyable.DestroyMe();
     }
     
     public void ChangeMaterialRequest(RoomObjectMaterialChanger roomObject, RoomObjectUI roomObjectUI) {

@@ -16,7 +16,7 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
     [SerializeField] private Transform listContent;
     [SerializeField] private UIModularListElement elementPrefab;
 
-    private UIModularListElementInfo[] _oldInfos; 
+    private UIModularListElementInfo[] _oldInfos;
     
     private void Start() {
         Close();
@@ -26,9 +26,11 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
         windowRoot.SetActive(true);
         UpdateList(infos);
     }
-    
-    public void Show() => Show(_oldInfos);
-    
+
+    public void Show() {
+        Show(_oldInfos);
+    }
+
     public void UpdateList() => UpdateList(_oldInfos);
 
     public bool Active => windowRoot.activeSelf;
@@ -46,7 +48,8 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
     }
 
     private void UpdateList(UIModularListElementInfo[] infos) {
-        ClearList();
+        while (listContent.childCount > 0)
+            DestroyImmediate(listContent.GetChild(0).gameObject);
 
         infos = infos.OrderBy(x => x.Price).ToArray();
         
@@ -56,8 +59,7 @@ public class UIModularListWindow : MonoBehaviour, IUIModalWindow
         _oldInfos = infos;
     }
 
-    private void ClearList() {
-        _oldInfos = new UIModularListElementInfo[0];
+    public void ClearList() {
         while (listContent.childCount > 0)
             DestroyImmediate(listContent.GetChild(0).gameObject);
     }

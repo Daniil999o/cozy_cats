@@ -1,2 +1,2 @@
-Build path: G:/Games Test/Uzhas
-Build number: 22
+Build path: G:/Games Test/Kotiki
+Build number: 23

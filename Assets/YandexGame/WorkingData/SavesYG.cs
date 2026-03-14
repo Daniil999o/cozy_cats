@@ -43,6 +43,8 @@ namespace YG
 
             public string[] savedObjectsId = new string[100];
             
+            public string[] savedObjectsData = new string[100];
+            
             public string[] currentObjectsMaterials = new string[100];
             public string[] currentObjectsSkins = new string[100];
         

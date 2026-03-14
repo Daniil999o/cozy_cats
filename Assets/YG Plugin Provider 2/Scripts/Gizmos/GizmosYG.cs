@@ -1,4 +1,9 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+
+using UnityEditor;
+
+#endif
+
 using UnityEngine;
 
 public static class GizmosYG
@@ -143,14 +148,22 @@ public static class GizmosYG
     private static Color _prevColor;
 
     private static void PrepareHandles() {
+        #if UNITY_EDITOR
+        
         _prevMatrix = Handles.matrix;
         _prevColor = Handles.color;
         Handles.matrix = Gizmos.matrix;
         Handles.color = Gizmos.color;
+        
+        #endif
     }
 
     private static void RestoreHandles() {
+        #if UNITY_EDITOR
+        
         Handles.matrix = _prevMatrix;
         Handles.color = _prevColor;
+        
+        #endif
     }
 }

@@ -48,7 +48,9 @@
             "name": "Room UI",
             "keys": [
                 "room_customize_material",
-                "room_customize_skin"
+                "room_customize_skin",
+                "answer_yes",
+                "answer_no"
             ],
             "expanded": true
         },
@@ -91,7 +93,33 @@
                 "door_ambar",
                 "door_prison",
                 "door_cafe",
-                "door_forest"
+                "door_forest",
+                "very_old_tv_derevo",
+                "very_old_tv_white",
+                "very_old_tv_orange",
+                "old_tv_default",
+                "modern_tv_1",
+                "smart_tv_1",
+                "old_tv_1",
+                "bed_default",
+                "bed_blue",
+                "bed_modern",
+                "bed_camo",
+                "bed_tiny",
+                "bed_royal",
+                "bed_scifi",
+                "bed_cyberpunk",
+                "bed_fantasy",
+                "pc_block_office",
+                "pc_block_run_gaming",
+                "pc_block_blue_vent",
+                "pc_block_acryl",
+                "pc_block_white_minimalism",
+                "pc_block_rgb",
+                "pc_block_top",
+                "pc_block_custom",
+                "pc_block_cyberneon",
+                "pc_block_quant"
             ],
             "expanded": true
         },
@@ -103,9 +131,28 @@
                 "bedside_table_3",
                 "bedside_table_4",
                 "bedside_table_5",
-                "bedside_table_6"
+                "bedside_table_6",
+                "wardrobe_1",
+                "wardrobe_2",
+                "wardrobe_3",
+                "wardrobe_4",
+                "wardrobe_5",
+                "wardrobe_6",
+                "bed_1",
+                "bed_2",
+                "bed_3",
+                "bed_4",
+                "bed_5",
+                "pc_block_default"
             ],
-            "expanded": false
+            "expanded": true
+        },
+        {
+            "name": "Dialogues",
+            "keys": [
+                "destroy_object_title"
+            ],
+            "expanded": true
         }
     ]
 }

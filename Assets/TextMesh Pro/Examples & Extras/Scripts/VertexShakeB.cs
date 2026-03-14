@@ -115,7 +115,7 @@ namespace TMPro.Examples
                         // Get the index of the first vertex used by this text element.
                         int vertexIndex = textInfo.characterInfo[j].vertexIndex;
 
-                        // Get the vertices of the mesh used by this text element (character or sprite).
+                        // Get the vertices of the objectPrefab used by this text element (character or sprite).
                         Vector3[] sourceVertices = textInfo.meshInfo[materialIndex].vertices;
 
                         // Determine the center point of each character at the baseline.

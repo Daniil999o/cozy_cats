@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -53,4 +54,63 @@ public static class VectorsExtensions
         new Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 
     public static float Multiply(this float val, Vector3 v) => val * v.magnitude;
+
+    public static Vector2? ToVector2(this string input) {
+        if (string.IsNullOrWhiteSpace(input)) return null;
+
+        string trimmed = input.Trim();
+
+        if (trimmed.StartsWith("(") && trimmed.EndsWith(")"))
+            trimmed = trimmed.Substring(1, trimmed.Length - 2).Trim();
+
+        string[] parts = trimmed.Split(',');
+        if (parts.Length != 2) return null;
+
+        float x, y;
+        if (!float.TryParse(
+                parts[0].Trim(),
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture, out x))
+            return null;
+        
+        if (!float.TryParse(parts[1].Trim(),
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture, out y))
+            return null;
+
+        return new Vector2(x, y);
+    }
+    
+    public static Vector3? ToVector3(this string input) {
+        if (string.IsNullOrWhiteSpace(input)) return null;
+
+        string trimmed = input.Trim();
+
+        if (trimmed.StartsWith("(") && trimmed.EndsWith(")"))
+            trimmed = trimmed.Substring(1, trimmed.Length - 2).Trim();
+
+        string[] parts = trimmed.Split(',');
+        if (parts.Length != 3) return null;
+
+        float x, y, z;
+        if (!float.TryParse(parts[0].Trim(),
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out x))
+            return null;
+        
+        if (!float.TryParse(parts[1].Trim(),
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out y))
+            return null;
+        
+        if (!float.TryParse(parts[2].Trim(),
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out z))
+            return null;
+
+        return new Vector3(x, y, z);
+    }
 }

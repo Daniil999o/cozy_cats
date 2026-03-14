@@ -52,6 +52,4 @@ public class RoomMaterialListElementInfo : UIModularListElementInfo
 {
     public RoomObjectMaterialChanger MyRoomObject { get; set; }
     public CustomMaterialSO MyMaterial { get; set; }
-    
-    public virtual UIModularListWindow ModularListWindow { get; set; }
 }

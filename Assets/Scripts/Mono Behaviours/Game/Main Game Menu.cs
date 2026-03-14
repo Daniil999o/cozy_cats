@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class MainGameMenu : MonoBehaviour
 {
@@ -27,4 +29,13 @@ public class MainGameMenu : MonoBehaviour
     private void Start() {
         Menu();
     }
+    
+#if UNITY_EDITOR
+
+    private void Update() {
+        if (Keyboard.current.f5Key.wasPressedThisFrame)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+#endif
 }

@@ -1,24 +1,48 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class RoomObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class RoomObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [field: SerializeField] private bool Validate { get; set; }
     [field: SerializeField] public string ElementId { get; set; }
+
+    [field: Space]
+
+    [field: SerializeField] public ShopItemSO ShopItemSO { get; private set; }
+    [SerializeField] private bool saveObject;
 
     [Space]
 
     [SerializeField] private bool canHighlight = false;
     [SerializeField] private GameObject[] highlightObjects;
     [SerializeField] private bool isFurniture;
+    
+    private RoomObjectUI _roomObjectUI;
 
     private bool _dontHighlight;
+
+    public void SaveObject() {
+        if (!saveObject) return;
+
+        RoomShop.SaveObjectData(ElementId, this);
+    }
+
+    private void Awake() {
+        _roomObjectUI = GetComponentInChildren<RoomObjectUI>(true);
+    }
 
     private void Start() {
         if (highlightObjects.Length <= 0)
             highlightObjects = new[] {
                 gameObject
             };
+    }
+
+    public void Initialize() {
+        if (TryGetComponent(out RoomObjectMaterialChanger materialChanger))
+            materialChanger.UpdateMaterial();
+        if (TryGetComponent(out RoomObjectSkinChanger skinChanger))
+            skinChanger.UpdateSkin();
     }
     
     public void OnPointerEnter(PointerEventData eventData) {
@@ -28,6 +52,7 @@ public class RoomObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         
         SetLayer(RoomUIHandler.Instance.SelectedLayer);
     }
+    
     public void OnPointerExit(PointerEventData eventData) {
         if (!canHighlight || _dontHighlight) return;
         
@@ -37,6 +62,20 @@ public class RoomObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             ? RoomUIHandler.Instance.ObjectLayer
             : RoomUIHandler.Instance.RoomLayer
         );
+    }
+    
+    public void OnPointerClick(PointerEventData eventData) {
+        if (!canHighlight || _dontHighlight) return;
+
+        if (!RoomUIHandler.Instance.HUDVisible) return;
+        
+        if (!_roomObjectUI) return;
+        
+        if (RoomUIHandler.Instance.HUDOnlyObject == _roomObjectUI) {
+            RoomUIHandler.Instance.ShowUI();
+        } else {
+            RoomUIHandler.Instance.ShowHUDOnlyFor(_roomObjectUI);
+        }
     }
 
     public void SetDrag(bool value) => _dontHighlight = value;

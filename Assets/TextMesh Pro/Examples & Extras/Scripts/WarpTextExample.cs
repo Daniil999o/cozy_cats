@@ -47,7 +47,7 @@ namespace TMPro.Examples
             VertexCurve.preWrapMode = WrapMode.Clamp;
             VertexCurve.postWrapMode = WrapMode.Clamp;
 
-            //Mesh mesh = m_TextComponent.textInfo.meshInfo[0].mesh;
+            //Mesh objectPrefab = m_TextComponent.textInfo.meshInfo[0].objectPrefab;
 
             Vector3[] vertices;
             Matrix4x4 matrix;
@@ -68,7 +68,7 @@ namespace TMPro.Examples
                 old_CurveScale = CurveScale;
                 old_curve = CopyAnimationCurve(VertexCurve);
 
-                m_TextComponent.ForceMeshUpdate(); // Generate the mesh and populate the textInfo with data we can use and manipulate.
+                m_TextComponent.ForceMeshUpdate(); // Generate the objectPrefab and populate the textInfo with data we can use and manipulate.
 
                 TMP_TextInfo textInfo = m_TextComponent.textInfo;
                 int characterCount = textInfo.characterCount;
@@ -79,8 +79,8 @@ namespace TMPro.Examples
                 //vertices = textInfo.meshInfo[0].vertices;
                 //int lastVertexIndex = textInfo.characterInfo[characterCount - 1].vertexIndex;
 
-                float boundsMinX = m_TextComponent.bounds.min.x;  //textInfo.meshInfo[0].mesh.bounds.min.x;
-                float boundsMaxX = m_TextComponent.bounds.max.x;  //textInfo.meshInfo[0].mesh.bounds.max.x;
+                float boundsMinX = m_TextComponent.bounds.min.x;  //textInfo.meshInfo[0].objectPrefab.bounds.min.x;
+                float boundsMaxX = m_TextComponent.bounds.max.x;  //textInfo.meshInfo[0].objectPrefab.bounds.max.x;
 
 
 
@@ -91,7 +91,7 @@ namespace TMPro.Examples
 
                     int vertexIndex = textInfo.characterInfo[i].vertexIndex;
 
-                    // Get the index of the mesh used by this character.
+                    // Get the index of the objectPrefab used by this character.
                     int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
 
                     vertices = textInfo.meshInfo[materialIndex].vertices;
@@ -107,7 +107,7 @@ namespace TMPro.Examples
                     vertices[vertexIndex + 3] += -offsetToMidBaseline;
 
                     // Compute the angle of rotation for each character based on the animation curve
-                    float x0 = (offsetToMidBaseline.x - boundsMinX) / (boundsMaxX - boundsMinX); // Character's position relative to the bounds of the mesh.
+                    float x0 = (offsetToMidBaseline.x - boundsMinX) / (boundsMaxX - boundsMinX); // Character's position relative to the bounds of the objectPrefab.
                     float x1 = x0 + 0.0001f;
                     float y0 = VertexCurve.Evaluate(x0) * CurveScale;
                     float y1 = VertexCurve.Evaluate(x1) * CurveScale;
@@ -134,7 +134,7 @@ namespace TMPro.Examples
                 }
 
 
-                // Upload the mesh with the revised information
+                // Upload the objectPrefab with the revised information
                 m_TextComponent.UpdateVertexData();
 
                 yield return new WaitForSeconds(0.025f);
