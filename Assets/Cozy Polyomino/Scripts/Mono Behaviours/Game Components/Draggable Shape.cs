@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -9,7 +10,8 @@ namespace CozyPolyomino
     public class DraggableShape : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
         [Header("Data")]
-        [SerializeField] private ShapeData shapeData;
+        [SerializeField] internal bool isBig;
+        [SerializeField] internal ShapeData shapeData;
 
         [Space]
 
@@ -52,10 +54,30 @@ namespace CozyPolyomino
         private float _defaultY;
         private float _yOffset;
 
+        public Action<DraggableShape> OnEnterHover;
+        public Action<DraggableShape> OnExitHover;
+        public Action<DraggableShape> OnStartDrag;
+        public Action<DraggableShape> OnDragging;
+        public Action<DraggableShape> OnEndsDrag;
+
         internal Action OnPlaced;
         private Action<DraggableShape, bool> _onDrop;
         
         private static DraggableShape CurrentDraggable { get; set; }
+
+        public Vector2Int[] GetCellsOnGrid() {
+            Vector3 targetPos = _transform.position;
+            targetPos.y = _startPosition.y;
+
+            Vector2Int gridPos = _gridController.WorldToGrid(targetPos);
+
+            gridPos -= new Vector2Int(1, 1);
+            
+            if (isBig)
+                print($"Origin: {gridPos}, Cells: {string.Concat(_currentShapeCells.Select(x => x + gridPos).ToArray())}");
+
+            return _currentShapeCells.Select(x => x + gridPos).ToArray();
+        }
 
         private void Awake() {
             _transform = GetComponent<Transform>();
@@ -95,12 +117,14 @@ namespace CozyPolyomino
         
         public void OnPointerEnter(PointerEventData eventData) {
             onEnterHover?.Invoke(this);
+            OnEnterHover?.Invoke(this);
             
             if (!CurrentDraggable || CurrentDraggable == this) _yOffset = 1f;
         }
         
         public void OnPointerExit(PointerEventData eventData) {
             onExitHover?.Invoke(this);
+            OnExitHover?.Invoke(this);
             
             if (!CurrentDraggable || CurrentDraggable != this) _yOffset = 0f;
         }
@@ -118,6 +142,7 @@ namespace CozyPolyomino
             _dragOffset = _transform.position - GetMouseWorldPos(eventData.position);
             
             onStartDrag?.Invoke(this);
+            OnStartDrag?.Invoke(this);
 
             if (!_isOnGrid) return;
 
@@ -156,6 +181,7 @@ namespace CozyPolyomino
             );
             
             onDragging?.Invoke(this);
+            OnDragging?.Invoke(this);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
@@ -181,6 +207,7 @@ namespace CozyPolyomino
             GridDrawer.Instance.ResetGridColors();
             
             onEndDrag?.Invoke(this);
+            OnEndsDrag?.Invoke(this);
             HoverGrid = false;
             
             _onDrop?.Invoke(this, isCorrect);

@@ -64,17 +64,25 @@ namespace CozyPolyomino
             shapeCells.Select(cellOffset => gridOrigin + cellOffset)
                 .All(targetPos => !IsOutOfBounds(targetPos) && !IsCellOccupied(targetPos));
 
-        internal bool IsCellOccupied(Vector2Int pos) => IsShapeOccupied(pos) || IsObstacleCell(pos);
+        internal bool IsCellOccupied(Vector2Int pos) =>
+            IsShapeOccupied(pos) || IsObstacleCell(pos) || BonusSpawner.Instance.AnyOnCell(pos);
 
-        private bool IsShapeOccupied(Vector2Int pos) => _occupiedByShapes.Contains(pos);
+        internal bool IsShapeOccupied(Vector2Int pos) => _occupiedByShapes.Contains(pos);
         internal bool IsObstacleCell(Vector2Int pos) => _occupiedByObstacles.Contains(pos);
+
+        public DraggableShape[] GetDraggablesOnCell(Vector2Int cellPos) =>
+            LevelSpawner.Instance.GetDraggablesOnCell(cellPos);
 
         internal void PlaceShape(Vector2Int gridOrigin, Vector2Int[] shapeCells) {
             foreach (Vector2Int x in shapeCells) _occupiedByShapes.Add(gridOrigin + x);
+            
+            BonusSpawner.Instance.NotifyGridChanged(_occupiedByShapes.ToArray(), _occupiedByObstacles.ToArray());
         }
 
         internal void RemoveShape(Vector2Int gridOrigin, Vector2Int[] shapeCells) {
             foreach (Vector2Int x in shapeCells) _occupiedByShapes.Remove(gridOrigin + x);
+            
+            BonusSpawner.Instance.NotifyGridChanged(_occupiedByShapes.ToArray(), _occupiedByObstacles.ToArray());
         }
 
         internal void AddObstacle(Vector2Int gridOrigin, Vector2Int[] shapeCells) {

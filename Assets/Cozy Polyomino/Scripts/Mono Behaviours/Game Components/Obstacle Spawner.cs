@@ -35,7 +35,10 @@ namespace CozyPolyomino
         }
 
         internal void ClearObstacles() {
-            foreach (Obstacle x in _spawnedObstacles.Where(x => x)) Destroy(x.gameObject);
+            foreach (Obstacle x in _spawnedObstacles.Where(x => x)) {
+                x.removeFromGrid = false;
+                Destroy(x.gameObject);
+            }
 
             _spawnedObstacles.Clear();
         }

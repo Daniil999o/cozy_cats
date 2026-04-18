@@ -11,6 +11,8 @@ namespace CozyPolyomino
         private GridController _gridController;
         private Vector2Int _gridPosition;
 
+        [HideInInspector] public bool removeFromGrid = true;
+
         internal void InitializeObstacle(Vector2Int pos, Vector2Int[] cells) {
             _gridController = GridController.Instance;
 
@@ -21,6 +23,8 @@ namespace CozyPolyomino
         }
 
         private void OnDestroy() {
+            if (!removeFromGrid) return;
+            
             _gridController.RemoveObstacle(_gridPosition, _shapeCells);
         }
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
+using System.Collections.Generic;
 
 namespace CozyPolyomino
 {
@@ -7,8 +8,11 @@ namespace CozyPolyomino
     public class ShapeSkinsData : ScriptableObject
     {
         [SerializeField] internal SerializedDictionary<ShapeData, ShapeObjects> shapes;
+        [SerializeField] internal SerializedDictionary<BonusType, BonusCell> bonusCells;
         
         internal ShapeObjects GetShapeObjects(ShapeData shape) => shapes[shape];
+
+        internal BonusCell GetBonusCell(BonusType type) => bonusCells.GetValueOrDefault(type);
 
         [System.Serializable]
         internal class ShapeObjects

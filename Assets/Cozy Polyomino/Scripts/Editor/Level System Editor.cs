@@ -34,6 +34,12 @@ namespace CozyPolyomino
         private bool _isDraggingPlacedObject = false;
         private PlacedObject _draggedPlacedObject;
         private Vector2Int _draggedObjectOriginalPosition;
+        
+        // Bonus system fields
+        private BonusType _selectedBonusType = BonusType.Gold;
+        private Texture2D _goldCircleTexture;
+        private Texture2D _brilliantCircleTexture;
+        private Texture2D _otherCircleTexture;
 
         private GUIStyle _gridCellStyle;
         private GUIStyle _gridCellHoverStyle;
@@ -54,8 +60,26 @@ namespace CozyPolyomino
 
         private const int CellSize = 30;
 
+        private static Color DraggableColor = Color.limeGreen;
+        private static Color ObstacleColor = Color.softRed;
+        
+        private static Color DraggableBorderColor = Color.green;
+        private static Color ObstacleBorderColor = Color.red;
+        
+        private static Color SelectedColor = Color.yellowNice;
+        
+        private static Color GoldColor = Color.yellow;
+        private static Color BrilliantColor = Color.cyan;
+        private static Color OtherColor = Color.aquamarine;
+        
+
+        private SerializedProperty _skinsProperty;
+
         private void OnEnable() {
             _systemData = (LevelSystemData)target;
+
+            _skinsProperty = serializedObject.FindProperty("skins");
+            
             LoadLevelsFromFolder();
             LoadAllShapes();
             CreateTextures();
@@ -64,11 +88,19 @@ namespace CozyPolyomino
         private void OnDisable() {
             if (_obstacleTexture) DestroyImmediate(_obstacleTexture);
             if (_draggableTexture) DestroyImmediate(_draggableTexture);
+            
+            if (_goldCircleTexture) DestroyImmediate(_goldCircleTexture);
+            if (_brilliantCircleTexture) DestroyImmediate(_brilliantCircleTexture);
+            if (_otherCircleTexture) DestroyImmediate(_otherCircleTexture);
         }
 
         private void CreateTextures() {
-            _obstacleTexture = CreateColorTexture(new Color(1f, 0.4f, 0.4f, 0.3f));
-            _draggableTexture = CreateColorTexture(new Color(0.4f, 0.8f, 1f, 0.3f));
+            _draggableTexture = CreateColorTexture(DraggableColor);
+            _obstacleTexture = CreateColorTexture(ObstacleColor);
+            
+            _goldCircleTexture = CreateCircleTexture(GoldColor, 16);
+            _brilliantCircleTexture = CreateCircleTexture(BrilliantColor, 16);
+            _otherCircleTexture = CreateCircleTexture(OtherColor, 16);
         }
 
         private Texture2D CreateColorTexture(Color color) {
@@ -76,6 +108,24 @@ namespace CozyPolyomino
             texture.SetPixel(0, 0, color);
             texture.Apply();
             return texture;
+        }
+        
+        private Texture2D CreateCircleTexture(Color color, int size) {
+            Texture2D tex = new Texture2D(size, size);
+            Vector2 center = new Vector2(size / 2f, size / 2f);
+            
+            float radius = size / 2f;
+            
+            for (int y = 0; y < size; y++) {
+                for (int x = 0; x < size; x++) {
+                    float dist = Vector2.Distance(new Vector2(x, y), center);
+                    tex.SetPixel(x, y, dist <= radius ? color : Color.clear);
+                }
+            }
+            
+            tex.Apply();
+            
+            return tex;
         }
 
         private void LoadAllShapes() {
@@ -111,12 +161,19 @@ namespace CozyPolyomino
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Level System", _headerStyle);
             EditorGUILayout.Space();
+            
+            EditorGUILayout.PropertyField(_skinsProperty, new GUIContent("Used Skins"));
+            
+            EditorGUILayout.Space(10);
+
 
             DrawCreateLevelSection();
             EditorGUILayout.Space();
 
             DrawLevelSelection();
             EditorGUILayout.Space();
+
+            serializedObject.ApplyModifiedProperties();
 
             if (_currentLevel) {
                 _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos, false, false);
@@ -155,12 +212,12 @@ namespace CozyPolyomino
                 height
             );
 
-            Color shapeColor = Color.green;
+            Color shapeColor = _selectedObjectType == ObjectType.DraggableObject ? DraggableColor : ObstacleColor;
 
             if (_isDraggingPlacedObject) {
                 shapeColor = _draggedPlacedObject.objectType == ObjectType.Obstacle
-                    ? new Color(1f, 0.4f, 0.4f, 0.5f)
-                    : new Color(0.4f, 0.8f, 1f, 0.5f);
+                    ? ObstacleColor
+                    : DraggableColor;
             }
 
             DrawShapeInRectWithFixedCellSize(shapeToDraw, previewRect, draggedCellSize, shapeColor);
@@ -334,6 +391,7 @@ namespace CozyPolyomino
 
                 LevelData newLevel = CreateInstance<LevelData>();
                 newLevel.levelName = _newLevelName;
+                newLevel.levelId = _systemData.Levels.Count + 1;
 
                 string levelPath = Path.Combine(levelsFolder, $"{_newLevelName}.asset");
                 levelPath = AssetDatabase.GenerateUniqueAssetPath(levelPath);
@@ -468,6 +526,7 @@ namespace CozyPolyomino
             EditorGUILayout.Space(10);
 
             DrawGrid();
+            DrawBonusGrid();
 
             EditorGUILayout.Space(10);
 
@@ -484,16 +543,23 @@ namespace CozyPolyomino
             if (_allShapes.Count == 0)
                 EditorGUILayout.HelpBox("No shapes found. Create Shape Data assets first.", MessageType.Info);
             else {
-                _shapesScrollPos = EditorGUILayout.BeginScrollView(_shapesScrollPos, GUILayout.Height(100));
+                _shapesScrollPos = EditorGUILayout.BeginScrollView(_shapesScrollPos, GUILayout.Height(200));
 
                 int shapesPerRow = Mathf.Max(1, Mathf.FloorToInt(EditorGUIUtility.currentViewWidth / 70));
                 int shapeIndex = 0;
 
-                while (shapeIndex < _allShapes.Count) {
+                bool ContainsShape(ShapeData shape) =>
+                    _selectedObjectType == ObjectType.DraggableObject
+                        ? _systemData.HasDraggableShape(shape)
+                        : _systemData.HasObstacleShape(shape);
+
+                ShapeData[] availableShapes = _allShapes.Where(ContainsShape).ToArray();
+
+                while (shapeIndex < availableShapes.Length) {
                     EditorGUILayout.BeginHorizontal();
 
-                    for (int i = 0; i < shapesPerRow && shapeIndex < _allShapes.Count; i++) {
-                        ShapeData shape = _allShapes[shapeIndex];
+                    for (int i = 0; i < shapesPerRow && shapeIndex < availableShapes.Length; i++) {
+                        ShapeData shape = availableShapes[shapeIndex];
                         bool isSelected = _selectedShape == shape;
 
                         GUIStyle style = isSelected ? _shapeButtonSelectedStyle : _shapeButtonStyle;
@@ -546,7 +612,7 @@ namespace CozyPolyomino
                         cellSize - 1
                     );
 
-                    EditorGUI.DrawRect(cellRect, Color.green);
+                    EditorGUI.DrawRect(cellRect, _selectedObjectType == ObjectType.DraggableObject ? DraggableColor : ObstacleColor);
                     EditorGUI.DrawRect(new Rect(cellRect.x, cellRect.y, cellRect.width, 1), Color.black);
                     EditorGUI.DrawRect(new Rect(cellRect.x, cellRect.y, 1, cellRect.height), Color.black);
                     EditorGUI.DrawRect(new Rect(cellRect.x + cellRect.width - 1, cellRect.y, 1, cellRect.height),
@@ -643,7 +709,7 @@ namespace CozyPolyomino
                         _isPlacementValid = IsPositionValidForShape(_draggedShape, gridPos);
                         _showPlacementPreview = true;
 
-                        DrawShapePreview(_draggedShape, gridPos, _isPlacementValid ? Color.green : Color.red);
+                        DrawShapePreview(_draggedShape, gridPos, _isPlacementValid ? DraggableColor : ObstacleColor);
                     } else
                         _showPlacementPreview = false;
                 } else if (_isDraggingPlacedObject && _draggedPlacedObject != null) {
@@ -655,7 +721,7 @@ namespace CozyPolyomino
                         _isPlacementValid = IsPositionValidForPlacedObject(_draggedPlacedObject, gridPos);
                         _showPlacementPreview = true;
 
-                        Color previewColor = _isPlacementValid ? Color.green : Color.red;
+                        Color previewColor = _isPlacementValid ? DraggableColor : ObstacleColor;
                         DrawShapePreview(_draggedPlacedObject.shapeData, gridPos, previewColor);
                     } else
                         _showPlacementPreview = false;
@@ -681,7 +747,7 @@ namespace CozyPolyomino
 
             EditorGUILayout.EndVertical();
         }
-
+        
         private void DrawObjectsOnGrid() {
             if (_currentLevel.PlacedObjects.Count == 0) return;
 
@@ -711,12 +777,10 @@ namespace CozyPolyomino
                 bool isSelected = _selectedPlacedObject == obj;
                 bool isHovered = _hoveredPlacedObject == obj;
 
-                Color fillColor = obj.objectType == ObjectType.Obstacle
-                    ? new Color(1f, 0.4f, 0.4f, 0.3f)
-                    : new Color(0.4f, 0.8f, 1f, 0.3f);
+                Color fillColor = obj.objectType == ObjectType.DraggableObject ? DraggableColor : ObstacleColor;
 
-                Color borderColor = isSelected ? Color.yellow :
-                    obj.objectType == ObjectType.Obstacle ? Color.red : Color.blue;
+                Color borderColor = isSelected ? SelectedColor :
+                    obj.objectType == ObjectType.DraggableObject ? DraggableBorderColor : ObstacleBorderColor;
 
                 HashSet<Vector2Int> cells = shapeCells[obj];
 
@@ -783,6 +847,104 @@ namespace CozyPolyomino
             }
         }
 
+        private void DrawBonusGrid() {
+            if (!_currentLevel) return;
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.LabelField("Bonus Grid (click cell to place/remove bonus)", EditorStyles.boldLabel);
+            EditorGUILayout.Space(5);
+
+            _selectedBonusType = (BonusType)EditorGUILayout.EnumPopup("Selected Bonus Type:", _selectedBonusType);
+
+            EditorGUILayout.Space(5);
+
+            float totalWidth = _currentLevel.gridWidth * CellSize;
+            float totalHeight = _currentLevel.gridHeight * CellSize;
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginVertical();
+
+            Rect bonusGridRect = GUILayoutUtility.GetRect(totalWidth, totalHeight);
+            
+            float startX = bonusGridRect.x;
+            float startY = bonusGridRect.y;
+
+            for (int y = 0; y < _currentLevel.gridHeight; y++) {
+                for (int x = 0; x < _currentLevel.gridWidth; x++) {
+                    Vector2Int cell = new Vector2Int(x, y);
+                    
+                    float cellX = startX + x * CellSize;
+                    float cellY = startY + (_currentLevel.gridHeight - 1 - y) * CellSize;
+                    
+                    Rect cellRect = new Rect(cellX, cellY, CellSize, CellSize);
+
+                    Color bgColor = new Color(0.95f, 0.95f, 0.95f, 0.2f);
+                    ObjectType? objType = _currentLevel.GetObjectTypeAtCell(cell);
+                    
+                    if (objType.HasValue) {
+                        bgColor = objType.Value == ObjectType.DraggableObject 
+                            ? DraggableColor
+                            : ObstacleColor;
+                    }
+
+                    EditorGUI.DrawRect(cellRect, bgColor);
+                    EditorGUI.DrawRect(new Rect(cellRect.x, cellRect.y, cellRect.width, 1), Color.gray);
+                    EditorGUI.DrawRect(new Rect(cellRect.x, cellRect.y, 1, cellRect.height), Color.gray);
+
+                    if (_currentLevel.TryGetBonusAt(cell, out BonusType bonusType)) {
+                        Texture2D circleTex = bonusType switch {
+                            BonusType.Gold => _goldCircleTexture, BonusType.Brilliant => _brilliantCircleTexture,
+                            var _ => _otherCircleTexture
+                        };
+                        
+                        if (circleTex) {
+                            const float padding = 4f;
+                            
+                            Rect circleRect = new Rect(cellRect.x + padding, cellRect.y + padding,
+                                cellRect.width - padding * 2, cellRect.height - padding * 2);
+                            GUI.DrawTexture(circleRect, circleTex);
+
+                            Color oldColor = GUI.color;
+                            
+                            GUI.color = Color.black;
+
+                            GUIStyle style = new GUIStyle {
+                                alignment = TextAnchor.MiddleCenter,
+                                font = EditorStyles.boldLabel.font,
+                                fontSize = EditorStyles.boldLabel.fontSize,
+                                fontStyle = FontStyle.Bold
+                            };
+                            
+                            GUI.Label(circleRect, bonusType.ToString()[0].ToString(), style);
+                            GUI.color = oldColor;
+                        }
+                    }
+
+                    if (Event.current.type != EventType.MouseDown || !cellRect.Contains(Event.current.mousePosition))
+                        continue;
+                    
+                    bool hasBonus = _currentLevel.TryGetBonusAt(cell, out BonusType currentBonus);
+
+                    if (hasBonus && (currentBonus == _selectedBonusType || Event.current.button == 1))
+                        _currentLevel.RemoveBonus(cell);
+                    else
+                        _currentLevel.SetBonus(cell, _selectedBonusType);
+                            
+                    EditorUtility.SetDirty(_currentLevel);
+                    Repaint();
+                    Event.current.Use();
+                }
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
+        }
+        
         private static void DrawInternalBorders(Rect cellRect,
             Vector2Int cellPos,
             HashSet<Vector2Int> shapeCells,
@@ -887,16 +1049,16 @@ namespace CozyPolyomino
 
             EditorGUILayout.Space(5);
 
-            if (_currentLevel.PlacedObjects.Count == 0)
+            if (_currentLevel.PlacedObjects.Count == 0) {
                 EditorGUILayout.HelpBox("Drag shapes from palette to place them", MessageType.Info);
-            else {
+            } else {
                 foreach (PlacedObject obj in _currentLevel.PlacedObjects) {
                     bool isSelected = _selectedPlacedObject == obj;
 
                     EditorGUILayout.BeginHorizontal();
 
                     Color oldColor = GUI.color;
-                    GUI.color = obj.objectType == ObjectType.Obstacle ? Color.red : Color.blue;
+                    GUI.color = obj.objectType == ObjectType.DraggableObject ? DraggableColor : ObstacleColor;
                     GUILayout.Box("", GUILayout.Width(10), GUILayout.Height(20));
                     GUI.color = oldColor;
 

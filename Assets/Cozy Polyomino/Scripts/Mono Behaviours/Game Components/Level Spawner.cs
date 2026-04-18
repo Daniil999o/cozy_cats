@@ -7,7 +7,7 @@ namespace CozyPolyomino
 {
     public class LevelSpawner : MonoBehaviour
     {
-        private static int CurrentLevel = 0;
+        public static int CurrentLevel = 0;
         
         [SerializeField] private int currentLevel = 0;
         [SerializeField] private LevelSystemData levelSystem;
@@ -26,7 +26,22 @@ namespace CozyPolyomino
 
         [Space]
 
+        [SerializeField] private UnityEvent onRegenerate;
         [SerializeField] private UnityEvent onWin;
+        [SerializeField] private UnityEvent<int> onGoldBonus;
+        [SerializeField] private UnityEvent<int> onBrilliantBonus;
+
+        private static LevelSpawner _instance;
+
+        internal static LevelSpawner Instance {
+            get {
+                if (!_instance) _instance = FindFirstObjectByType<LevelSpawner>(FindObjectsInactive.Include);
+                return _instance;
+            }
+        }
+
+        public DraggableShape[] GetDraggablesOnCell(Vector2Int cellPos) =>
+            spawnedDraggables.Where(x => x.GetCellsOnGrid().Contains(cellPos)).ToArray();
 
         private bool _win;
 
@@ -51,6 +66,7 @@ namespace CozyPolyomino
             spawnedObjects = new List<GameObject>();
             spawnedDraggables = new List<DraggableShape>();
             
+            BonusSpawner.Instance.ClearBonuses();
             ObstacleSpawner.Instance.ClearObstacles();
 
             LevelData level = levelSystem.GetLevel(currentLevel);
@@ -99,8 +115,18 @@ namespace CozyPolyomino
                         break;
                 }
             }
+
+            foreach (var x in level.Bonuses) {
+                if (x == null) continue;
+
+                BonusCell prefab = currentSkins.GetBonusCell(x.type);
+                
+                BonusSpawner.Instance.SpawnBonus(x.position, prefab);
+            }
             
             GridDrawer.Instance.Initialize();
+            
+            onRegenerate?.Invoke();
         }
 
         private void CheckAllDraggables() {
@@ -113,6 +139,19 @@ namespace CozyPolyomino
             if (_win) return;
 
             _win = true;
+
+            Dictionary<BonusType, int> bonuses = BonusSpawner.Instance.GetCollectedBonuses();
+
+            foreach (var x in bonuses) {
+                switch (x.Key) {
+                    case BonusType.Gold:
+                        onGoldBonus?.Invoke(x.Value);
+                        break;
+                    case BonusType.Brilliant:
+                        onBrilliantBonus?.Invoke(x.Value);
+                        break;
+                }
+            }
             
             onWin?.Invoke();
         }
